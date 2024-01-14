@@ -73,6 +73,5 @@ int main(){
     else{
         cout << ans <<'\n';
     }
-
     return 0;
 }

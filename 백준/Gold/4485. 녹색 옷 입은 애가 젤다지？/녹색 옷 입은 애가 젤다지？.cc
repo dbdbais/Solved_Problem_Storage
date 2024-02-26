@@ -10,7 +10,7 @@
 using namespace std;
 
 int arr[126][126];
-int visited [126][126];
+int dist [126][126];
 int N;
 int dx[] = {0,0,-1,1};
 int dy[] = {-1,1,0,0};
@@ -24,33 +24,44 @@ void fastIO(){
 bool out(int x,int y){
     return x <0 || y <0 || x>=N || y >=N;
 }
+void print(){
+    For(i,0,N){
+        For(j,0,N){
+            cout << dist[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+}
 
-void BFS(int x,int y){
-    fill(visited[0],visited[N],1e9);    //최대 값으로 채움
+void dijkstra(int x,int y){
+    fill(dist[0],dist[N],1e9);
 
-    queue<pair<int,int>> q;
-    q.push({x,y});
-    visited[x][y] = arr[x][y];  //현재 값 대입
+    priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<pair<int,pair<int,int>>>>pq;
 
-    while(q.size()){
+    pq.push({arr[x][y],{x,y}});
+    dist[0][0] = arr[0][0]; //현재 경로 넣어줌
 
-        auto cur = q.front(); q.pop();
-        x = cur.first;
-        y = cur.second;
-
+    while(pq.size()){
+        auto cur = pq.top(); pq.pop();
+        x = cur.second.first;
+        y = cur.second.second;
+        int weight = cur.first;
+        if(dist[x][y] != weight) continue;  //가장 최근 갱신된 것만 본다.
         for(int i=0;i<4;i++){
             int qx = x + dx[i];
             int qy = y + dy[i];
 
             if(out(qx,qy)) continue;
 
-            if(visited[qx][qy]> visited[x][y]+arr[qx][qy]){
-                visited[qx][qy] = visited[x][y]+arr[qx][qy];
-                q.push({qx,qy});
+            int next_weight = arr[qx][qy];
+            if(dist[qx][qy] > weight+ next_weight){ //지금 거리보다 작다면
+                dist[qx][qy] = weight+ next_weight; //update
+                pq.push({dist[qx][qy],{qx,qy}});    //다음 탐색을 위해 업데이트
             }
-
         }
     }
+
 }
 
 int main(){
@@ -64,9 +75,8 @@ int main(){
                 cin >> arr[i][j];
             }
         }
-        BFS(0,0);
-
-        cout << "Problem "<<num<<": "<<visited[N-1][N-1]<<endl;
+        dijkstra(0,0);
+        cout << "Problem "<<num<<": "<<dist[N-1][N-1]<<endl;
         num++;
     }
 

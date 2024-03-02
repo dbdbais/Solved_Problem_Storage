@@ -1,144 +1,102 @@
 //
-// Created by newbi on 2023-10-14.
+// Created by newbi on 2024-03-02.
 //
 #include <iostream>
 #include <vector>
 #include <cstring>
-#include <cmath>
+#define endl '\n'
+#define For(i,a,b) for(int i=a;i<b;i++)
+#define fastIO() ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
+
 using namespace std;
-int chains [4][8];
-int K;
-bool clkWise[4];    //톱니의 시계방향 체크
-bool visited[4];    //톱니의 방문 여부
-void rotateDeClock(int which);
-void rotateClock(int which);
 
-void solve(int which){
-    vector<int> tmp;
+vector<int> gear[4];    //0부터 반시계 방향으로
 
-    if(which ==0){
-        if(chains[which][2] != chains[which+1][6] && !visited[which+1]){
-            tmp.push_back(which+1);
-        }
-    }
-    else if(which == 1){
-        if(chains[which][2] != chains[which+1][6] && !visited[which+1]){
-            tmp.push_back(which+1);
-        }
-        if(chains[which][6] != chains[which-1][2] && !visited[which-1]){
-            tmp.push_back(which-1);
-        }
-    }
-    else if(which == 2){
-        if(chains[which][2] != chains[which+1][6] && !visited[which+1]){
-            tmp.push_back(which+1);
-        }
-        if(chains[which][6] != chains[which-1][2] && !visited[which-1]){
-            tmp.push_back(which-1);
-        }
-
-
-    }
-    else if(which == 3){
-        if(chains[which][6] != chains[which-1][2] && !visited[which-1]){
-            tmp.push_back(which-1);
-        }
-    }
-
-    visited[which] = true;
-
-    if(clkWise[which]){
-        rotateClock(which);
-    }
-    else{
-        rotateDeClock(which);
-    }
-    for(auto elem : tmp){
-        solve(elem);
-    }
-
-
-}
-void rotateClock(int which){
-    int *chain = chains[which];
-    int tmp = chain[7];
-    for(int i= 7;i>0;i--){
-        chain[i] = chain[i-1];
-    }
-    chain[0] = tmp;
-}
-void rotateDeClock(int which){
-    int *chain = chains[which];
-    int tmp = chain[0];
-    for(int i= 0;i<7;i++){
-        chain[i] = chain[i+1];
-    }
-    chain[7] = tmp;
+void rotateClock(int idx){  //시계 방향 회전
+    gear[idx] = {gear[idx][7],gear[idx][0],gear[idx][1],gear[idx][2],gear[idx][3],gear[idx][4],gear[idx][5],gear[idx][6]};
 }
 
-void reset(){
-    memset(visited,false,sizeof(visited));
-    memset(clkWise,false,sizeof(clkWise));
+void rotateDeClock(int idx){  //시계 방향 회전
+    gear[idx] = {gear[idx][1],gear[idx][2],gear[idx][3],gear[idx][4],gear[idx][5],gear[idx][6],gear[idx][7],gear[idx][0],};
 }
-void print(){
-    for(auto chain : chains){
-        for(int i=0;i<8;i++){
-            cout << chain[i]<<" ";
+
+
+int T,K,rIdx,dir;
+int rArr[4];
+bool visited[4];
+bool out(int x){
+    return x <0 || x >=4;
+}
+
+void check(int idx,int way){
+    visited[idx] = true;
+    rArr[idx] = way;
+    for(int elem : {-1,1}){
+        int nxt = idx +elem;
+        if(out(nxt)||visited[nxt]) continue;    //나갔거나 이미 방문이라면
+
+        if(elem == -1){ //왼쪽에 위치한 기어라면
+            if(gear[idx][6] != gear[nxt][2]){
+                check(nxt,way * -1);
+            }
+            else{
+                visited[nxt] = true;    //방문처리
+            }
         }
-        cout <<endl;
+        else{   //오른쪽에 위치한 기어라면
+            if(gear[idx][2] != gear[nxt][6]){
+                check(nxt,way * -1);
+            }
+            else{
+                visited[nxt] = true;    //방문처리
+            }
+        }
     }
+return;
 }
-void fastIO(){
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
-}
-void setDirection(int which,bool isClk){
-    for(int i=0;i<4;i++){
-        if(i%2 == 0) {
-            clkWise[(which + i) % 4] = isClk;
+void rotate(){
+    For(i,0,4){
+        if(rArr[i] == 1){
+            rotateClock(i);
         }
-        else{
-            clkWise[(which + i) % 4] = !isClk;
+        else if(rArr[i] == -1){
+            rotateDeClock(i);
         }
     }
 }
-int calc(){
-    int sm = 0 ;
-    for(int i=0;i<4;i++){
-        if(chains[i][0] == 1) {
-            sm += pow(2, i);
+int count(){
+    int cnt = 0;
+    int m = 1;
+    For(i,0,4){
+        if(gear[i][0] == 1){
+            cnt = cnt + m;
         }
+
+        m*=2;
     }
-    return sm;
+    return cnt;
 }
+
+
 int main(){
-
     fastIO();
-    string st;
-
-    for(int i=0;i<4;i++){
-        cin >> st;
-        for(int j=0;j<8;j++){
-            chains[i][j] = st[j]-'0';
+    string s;
+    For(i,0,4){
+        cin >> s;
+        For(j,0,8){
+            gear[i].push_back(s[j]-'0');
         }
     }
-
-    int where;
-    int direc;
     cin >> K;
-    for(int i=0;i<K;i++){
-        cin >> where >> direc;
-        if(direc == 1){
-            setDirection(where-1,true);
+        For(i,0,K){
+            cin >> rIdx >> dir;
+            check(rIdx-1,dir);
+            rotate();
+            memset(rArr,0,sizeof(rArr));
+            memset(visited,false,sizeof(visited));
         }
-        else if(direc == -1){
-            setDirection(where-1,false);
-        }
-        solve(where-1);
-        //print();
-        reset();
-    }
-    cout << calc() << '\n';
+        cout << count()<<endl;
+
     return 0;
 }
+

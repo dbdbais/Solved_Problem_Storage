@@ -29,6 +29,20 @@ void fastIO(){
 bool out(int x,int y){
     return x<0 || y <0 || x>=N || y >= N;
 }
+int bounce(int dir){
+    if(dir == 0){
+        return 1;
+    }
+    else if(dir == 1){
+        return 0;
+    }
+    else if(dir == 2){
+        return 3;
+    }
+    else{
+        return 2;
+    }
+}
 
 void print(){
 
@@ -50,115 +64,105 @@ void print(){
 }
 
 void play(int x,int y,int dir){
+    //cout << "( "<<x <<", "<<y <<" )" <<endl;
 
-    while(true){
+    int qx = x +dx[dir];    //다음 move
+    int qy = y +dy[dir];
 
-        int qx = x +dx[dir];    //다음 move
-        int qy = y +dy[dir];
-//        cout << "( "<<qx <<", "<<qy <<" )" <<endl;
-//        cout << "Score :" <<score<<endl;
-        if(arr[qx][qy] == -1||(qx == startX && qy == startY)){  //블랙홀을 만나거나, 시작자리로 돌아오면
-            break;
-        }
-
-        if(out(qx,qy)){ //벽에 부딪히면 방향 반대로 바꾸고 반영
-            //방향 바꾸고
-            score= (score* 2) +1;
-            break;
-        }
-
-
-        if(arr[qx][qy] == 1){   //다음이 벽이라면
-
-            if(dir == 0){
-                dir = 2;
-            }
-            else if(dir == 3){
-                dir = 1;
-            }
-            else{
-                score= (score* 2) +1;
-                break;
-            }
-            score++;
-            x = qx;
-            y = qy;
-            continue;
-        }
-        else if(arr[qx][qy] == 2){
-
-            if(dir == 0){   //
-                dir = 3;
-            }
-            else if(dir == 2){
-                dir = 1;
-            }
-            else{
-                score= (score* 2) +1;
-                break;
-            }
-            score++;
-            x = qx;
-            y = qy;
-            continue;
-        }
-        else if(arr[qx][qy] == 3){
-
-            if(dir == 1){
-                dir = 3;
-            }
-            else if(dir == 2){
-                dir = 0;
-            }
-            else{
-                score= (score* 2) +1;
-                break;
-            }
-            score++;
-            x = qx;
-            y = qy;
-            continue;
-        }
-        else if(arr[qx][qy] == 4){
-
-            if(dir == 1){
-                dir = 2;
-            }
-            else if(dir == 3){
-                dir = 0;
-            }
-            else{
-                score= (score* 2) +1;
-                break;
-            }
-            score++;
-            x = qx;
-            y = qy;
-            continue;
-        }
-        else if(arr[qx][qy] == 5){
-            score= (score* 2) +1;
-            break;
-        }
-        else if(arr[qx][qy] >= 6 && arr[qx][qy] <= 10){  //웜 홀이라면
-            for(auto cord :hole[arr[qx][qy]-6]){
-                if(cord.first == qx && cord.second == qy) continue;
-                qx = cord.first;
-                qy = cord.second;   //웜홀로 이동
-                break;
-            }
-            x = qx;
-            y = qy;
-            continue;
-        }
-        else{   //0이면
-            x = qx;
-            y = qy;//다음으로 간다.
-            continue;
-        }
-
+    if(arr[qx][qy] == -1||(qx == startX && qy == startY)){  //블랙홀을 만나거나, 시작자리로 돌아오면
+        if(ans < score) ans = score;
+        return;
     }
-    if(ans < score) ans = score;
+
+    if(out(qx,qy)){ //벽에 부딪히면 방향 반대로 바꾸고 반영
+        //방향 바꾸고
+        score = (score*2)+1;
+        if(ans < score) ans = score;
+        return;
+    }
+
+    if(arr[qx][qy] == 1){   //다음이 벽이라면
+
+        if(dir == 0){
+            dir = 2;
+        }
+        else if(dir == 3){
+            dir = 1;
+        }
+        else{
+            score = (score*2)+1;
+            if(ans < score) ans = score;
+            return;
+        }
+        score++;
+        play(qx,qy,dir);
+    }
+    else if(arr[qx][qy] == 2){
+
+        if(dir == 0){   //
+            dir = 3;
+        }
+        else if(dir == 2){
+            dir = 1;
+        }
+        else{
+            score = (score*2)+1;
+            if(ans < score) ans = score;
+            return;
+        }
+        score++;
+        play(qx,qy,dir);
+    }
+    else if(arr[qx][qy] == 3){
+
+        if(dir == 1){
+            dir = 3;
+        }
+        else if(dir == 2){
+            dir = 0;
+        }
+        else{
+            score = (score*2)+1;
+            if(ans < score) ans = score;
+            return;
+        }
+        score++;
+        play(qx,qy,dir);
+    }
+    else if(arr[qx][qy] == 4){
+
+        if(dir == 1){
+            dir = 2;
+        }
+        else if(dir == 3){
+            dir = 0;
+        }
+        else{
+            score = (score*2)+1;
+            if(ans < score) ans = score;
+            return;
+        }
+        score++;
+        play(qx,qy,dir);
+    }
+    else if(arr[qx][qy] == 5){
+        score = (score*2)+1;
+        if(ans < score) ans = score;
+        return;
+    }
+    else if(arr[qx][qy] >= 6 && arr[qx][qy] <= 10){  //웜 홀이라면
+        for(auto cord :hole[arr[qx][qy]-6]){
+            if(cord.first == qx && cord.second == qy) continue;
+            qx = cord.first;
+            qy = cord.second;   //웜홀로 이동
+            break;
+        }
+        play(qx,qy,dir);
+    }
+    else{   //0이면
+        play(qx,qy,dir);    //다음으로 간다.
+    }
+    return;
 }
 
 void solve(){
@@ -167,16 +171,7 @@ void solve(){
             if(arr[i][j] == 0){
                 startX = i;
                 startY = j;
-                //cout <<"Start : ("<< i <<", "<<j <<")"<<endl;
                 For(a,0,4){
-                   // cout << "dir :" <<a <<endl;
-                   int qx = startX + dx[a];
-                   int qy = startY + dy[a];
-                   if(out(qx,qy) || arr[qx][qy] == 5){
-                       if(1> ans) ans = 1;
-                       continue;
-                   }
-
                     score = 0;  //점수 초기화
                     play(startX,startY,a);
                 }
@@ -198,14 +193,8 @@ int main(){
                 }
             }
         }
+
         solve();
-
-//        startX = 4;
-//        startY = 0;
-//
-//        play(startX,startY,1);
-
-
         cout <<"#"<<t<<" "<< ans << endl;
         ans = 0;
         For(i,0,6){

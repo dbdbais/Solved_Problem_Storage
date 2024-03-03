@@ -1,207 +1,117 @@
-//
-// Created by newbi on 2024-02-20.
-//
 #include <iostream>
+#include <queue>
 #include <vector>
-#include <cmath>
-
 #define For(i,a,b) for(int i=a;i<b;i++)
-#define endl '\n';
+#define endl '\n'
+#define fastIO() ios::sync_with_stdio(0),cin.tie(0),cout.tie(0)
 
 using namespace std;
 
-int N,T,M,C,ans;
+int T,N,M,C;
+int arr[15][15];
+int ans;
+struct Honey{
+    int x;
+    int y;
+    int profit = 0;
+    Honey(int x,int y,int profit):x(x),y(y),profit(profit){
+    }
 
-int honey[13][13];
-bool visited[13][13];
+    bool operator<  (const Honey h) const{
+        return profit < h.profit;
+    }
+};
 
-int tmpSm;
+int tmpSum;
+bool isSel[15];
 
-void partial(int idx, vector<int> v,int sm,vector<int> vec) {
-
-    if (idx == vec.size()) {
-        if(sm <= C){
-            int t =0;
-            for(auto elem :v){
-                t += pow(elem,2);
+void partial(vector<int>p,int idx){
+    if(idx == p.size()){
+        int t =0;
+        int tsq =0;
+        for(int i=0;i<p.size();i++){
+            if(isSel[i]){
+                t += p[i];
+                tsq += p[i]*p[i];
             }
-            tmpSm = max(tmpSm, t );
+        }
+        if(t <=C && tmpSum <= tsq){
+            tmpSum = tsq;
         }
         return;
     }
+    isSel[idx] = true;
+    partial(p,idx+1);
+    isSel[idx] = false;
+    partial(p,idx+1);
 
-    v.push_back(vec[idx]);
-    partial(idx + 1,v,sm + vec[idx],vec);
-    v.pop_back();
-    partial(idx + 1,v,sm,vec);
-}
-void fastIO() {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
 }
 
-bool out(int x, int y) {
-    return x < 0 || x >= N || y < 0 || y >= N;
-}
-
-void ipt() {
-    For(i, 0, N) {
-        For(j, 0, N) {
-            cin >> honey[i][j];
-        }
-    }
-}
-
-void print(){
+priority_queue<Honey> pq;
+void solve(){
     For(i,0,N){
-        For(j,0,N){
-            cout << visited[i][j] <<" ";
-        }
-        cout <<endl;
-    }
-    cout << endl;
-    For(i,0,N) {
-        For(j, 0, N) {
-            cout << honey[i][j] << " ";
-        }
-        cout <<endl;
-    }
-        cout << endl;
-}
-void collect(){
-    int temp =0;
-    vector<int> avec;
-    vector<int> bvec;
-
-    int cnt =0;
-    int asum=0, bsum =0;
-    For(i,0,N){
-        For(j,0,N){
-            if(visited[i][j]){
-                cnt++;
-                if(cnt <= M){
-                    asum += honey[i][j];
-                    avec.push_back(honey[i][j]);
+        for(int j=0;j<N-M+1;j++){
+            vector<int> tmp;
+            int tmpSm = 0;
+            for(int k= j;k<j+M;k++){
+                //cout << arr[i][k] <<" ";
+                tmp.push_back(arr[i][k]);
+                tmpSm += arr[i][k];
+            }
+            //cout <<endl;
+            if(tmpSm <= C){
+                int finSum =0;
+                for(auto elem : tmp){
+                    finSum += (elem * elem);
                 }
-                else{
-                    bsum += honey[i][j];
-                    bvec.push_back(honey[i][j]);
+                pq.push(Honey(i,j,finSum));
+            }
+            else{
+                tmpSum = 0;
+                partial(tmp,0);
+                pq.push(Honey(i,j,tmpSum));
+            }
+        }
+    }
+
+    if(pq.size()){
+        Honey prv = pq.top();
+        pq.pop();
+        ans = prv.profit;
+        while(pq.size()){
+            Honey cur = pq.top();
+            pq.pop();
+            if(prv.x == cur.x){
+                if(prv.y + M -1 >= cur.y || cur.y + M-1 >= prv.y){
+                    continue;
                 }
             }
-        }
-    }
-    if(asum <= C){
-        for(int h : avec){
-            temp += pow(h,2);
-        }
-    }
-    else{   //부분 조합
-        tmpSm = 0;
-        vector<int>v;
-        partial(0,v,0,avec);
-        temp += tmpSm;
-    }
-
-    if(bsum <= C){
-        for(int h : bvec){
-            temp += pow(h,2);
-        }
-    }
-    else{   //부분조합
-        tmpSm = 0;
-        vector<int>v;
-        partial(0,v,0,bvec);
-        temp += tmpSm;
-    }
-    /*
-    cout << "avec : ";
-    for(auto elem : avec){
-        cout <<elem <<" ";
-    }
-    cout <<endl;
-    cout << "bvec : ";
-    for(auto elem : bvec){
-        cout <<elem <<" ";
-    }
-    cout <<endl;
-    cout << temp <<endl;
-     */
-    ans = max(ans,temp);
-
-}
-
-void solve(int cnt,int row) {
-    if (cnt == 2) {	//2명의 일 꾼이 다 했을 경우
-        collect();
-        //print();
-        return;
-    }
-    For(i,row,N) {
-        For(j, 0, N) {
-            if(out(i,j+M-1) || visited[i][j]) continue; 	//맵 밖으로 나가거나 방문 했다면
-            bool found = false;
-            For(k,0,M){
-                if(visited[i][j+k]) found = true;
-            }
-            if(found) continue;
-
-            For(k, 0, M) {
-                visited[i][j + k] = true;	//방문 처리
-            }
-            solve(cnt + 1,i);
-            For(k, 0, M) {
-                visited[i][j + k] = false;	//원상 복구
-            }
+            ans += cur.profit;
+            break;
         }
     }
 
+    while(pq.size()){
+        pq.pop();
+    }
 }
 
 
-int main() {
+int main(){
     fastIO();
-
     cin >> T;
-    For (t, 1, T + 1) {
+
+    For(t,1,T+1){
         cin >> N >> M >> C;
-        ipt();
-        solve(0,0);
-        cout <<"#"<<t<<" "<<ans <<endl;
+        For(i,0,N){
+            For(j,0,N){
+                cin >> arr[i][j];
+            }
+        }
+        solve();
+        cout << "#" <<t<<" "<<ans <<endl;
         ans = 0;
     }
 
-
-
     return 0;
 }
-
-
-/*
-N * N개의 벌통 정사각형으로 배치
-
-각 칸의 숫자는 꿀의 양을 나타내지만 양이 다를 수 있다.
-
-16개의 벌통
-
-각 벌통에 있는 꿀의 양이 주어질 때,
-
-두명의 일꾼 = > 가로로 연속되도록 M개의 벌통 선택 후 채취
-
-두 명의 일꾼이 선택한게 겹치면 안됨
-
-용기에 담는다.하나의 벌통->하나의 용기에 담는다
-
-모든 꿀을 한방에 채취한다.
-
-C = 일꾼이 채취할 수 있는 최대 양이고, 초과하면 하나만 채취
-
-하나의 용기에 있는 꿀의 양이 많을 수록 가치 높아 제곱만큼 수익이 생긱ㄴ다.
-
-두 일 꾼이 얻을 수 있는 수익의 합이 최대가 되는 경우 찾고, 최대 수익 출력
-
-
-꿀 C M 의 조합을 생성한 후에->C가 크면 전부 채취해 각자 저장 후 최대 값 갱신
-C가 충분히 크지 않다면 벌통의 부분조합을 생성해 추출 후 비교
-*/
-

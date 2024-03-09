@@ -13,46 +13,35 @@ using namespace std;
 
 int TC,N,M,W,S,E,T;
 
-vector<pair<int,int>> adj[501];
-int dist[501][501];
-void print(){
-    For(i,1,N+1){
-        For(j,1,N+1){
-            if(dist[i][j] == INF){
-                cout <<"I ";
-            }
-            else {
-                cout << dist[i][j] << " ";
-            }
-        }
-        cout <<endl;
-    }
-    cout <<endl;
-    cout <<endl;
-}
+vector<pair<int,pair<int,int>>>Edge;    //가중치 x, y
+
+int dist[501];
 
 
-void floyd(){
+bool bellmanFord(){
 
-    for(int k=1;k<=N;k++){
-        for(int i=1;i<=N;i++){
-            if(k == i) continue;
-            for(int j=1;j<=N;j++){
-                if(k == j) continue;
-                dist[i][j] = min(dist[i][j],dist[i][k] + dist[k][j]);   //모든 정점 최소거리로 갱신
-                //cout << i<<", "<<j<<", "<<k <<endl;
-                //print();
+    for(int i=0;i<=N;i++){
+        for(auto e : Edge){
+            int cur_weight = e.first;
+            int cur_s = e.second.first;
+            int cur_e = e.second.second;
+
+            //if(dist[cur_s] == INF) continue;    //미탐색인 노드는 스킵
+            if(dist[cur_e] > dist[cur_s] + cur_weight) {
+                if(i == N){
+                    return false;
+                }
+                else {
+                    dist[cur_e] = dist[cur_s] + cur_weight;
+                }
             }
         }
     }
+
+    return true;
 }
 
-bool findNeg(){
-    For(i,1,N+1){
-        if(dist[i][i] < 0) return true;
-    }
-    return false;
-}
+
 
 int main(){
 
@@ -60,24 +49,29 @@ int main(){
     cin >> TC;
     For(t,1,TC+1){
         cin >> N >> M >> W;
-        fill(&dist[0][0],&dist[0][0]+501*501,INF);
+        fill(&dist[0],&dist[0]+501,INF);
+        Edge.clear();
+
         For(i,0,M){
             cin >> S >> E >> T;
-            dist[S][E] = min(T,dist[S][E]);
-            dist[E][S] = min(T,dist[E][S]);
+            Edge.push_back({T,{S,E}});
+            Edge.push_back({T,{E,S}});
         }
         For(i,0,W){
             cin >> S >> E >> T;
-            dist[S][E] = min(-T,dist[S][E]);
+            Edge.push_back({-T,{S,E}});
         }
-        floyd();
 
-        if(findNeg()){
+
+
+        if(!bellmanFord()){
             cout << "YES" << endl;
         }
         else{
             cout << "NO" << endl;
         }
+
+
     }
 
     return 0;

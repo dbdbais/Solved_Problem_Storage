@@ -28,11 +28,11 @@ void solve(){
             ans.first = input[left];
             ans.second = input[right];
         }
-        if(dist == 0) break;
+        //if(dist == 0) break;
         if(tmp <0){
             left++;
         }
-        else if(tmp > 0){
+        else{
             right--;
         }
 

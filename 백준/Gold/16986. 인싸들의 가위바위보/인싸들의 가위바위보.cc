@@ -55,12 +55,6 @@ void swap(int &a,int &b){
     a = b;
     b = tmp;
 }
-bool allUsed(){
-    For(i,1,N+1){
-        if(isSel[i] == false) return false;
-    }
-    return true;
-}
 
 void DFS(int turn,int a,int b){
     //  NonPromising 가지치기
@@ -185,7 +179,6 @@ void DFS(int turn,int a,int b){
 int main(){
     fastIO();
     input();
-    //permutation(0);
     DFS(1,1,2);
     cout << canWin << endl;
     return 0;

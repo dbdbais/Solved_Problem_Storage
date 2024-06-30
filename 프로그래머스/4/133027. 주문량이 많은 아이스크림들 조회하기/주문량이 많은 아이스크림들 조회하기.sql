@@ -1,0 +1,7 @@
+-- 코드를 입력하세요
+SELECT FLAVOR from(SELECT * from FIRST_HALF
+UNION 
+select * from JULY) as ICECREAM 
+GROUP by FLAVOR
+ORDER BY SUM(TOTAL_ORDER) DESC
+limit 3;

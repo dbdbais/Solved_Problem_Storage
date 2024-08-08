@@ -10,6 +10,29 @@ class Main {
 	static ArrayList<Integer>[] lst;
 	static HashSet<Integer> set;
 	static int[][] compressedNums;
+	
+	static int binarySearch(ArrayList<Integer> arr, int key) {
+		int _left = 0;
+		int _right = arr.size()-1;
+		int mid = -1;
+		while(_left <= _right) {
+			mid = (_left + _right) / 2;
+			
+			if(arr.get(mid) == key) {
+				
+				break;
+			}
+			else if(arr.get(mid) > key) {
+				_right = mid -1;
+			}
+			else {
+				_left = mid + 1;
+			}
+		}
+		return mid;
+		
+	}
+	
 	public static void main(String[] args) throws IOException {
 		
 		st = new StringTokenizer(in.readLine());
@@ -39,7 +62,8 @@ class Main {
 		for(int i=0;i<M;i++) {
 			//System.out.println(lst[i].toString());
 			for(int j=0;j<N;j++) {
-				compressedNums[i][j] = Collections.binarySearch(lst[i], arr[i][j]);
+				//compressedNums[i][j] = Collections.binarySearch(lst[i], arr[i][j]);
+				compressedNums[i][j] = binarySearch(lst[i], arr[i][j]);
 				//System.out.print(compressedNums[i][j]+" ");
 			}
 			//System.out.println();

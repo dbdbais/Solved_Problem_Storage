@@ -93,7 +93,10 @@ class Main {
 		}
 		
 		for (int i = 0; i < K; i++) {
-			if(mp.containsKey(ipt[i])) continue;
+			if(mp.containsKey(ipt[i])) {
+				sb.append(mp.get(ipt[i])+"\n");
+				continue;
+			}
 			solve(i);
 			//해당하는 문자열 개수 찾으러 떠난다.
 		}

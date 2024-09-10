@@ -63,9 +63,13 @@ class Main {
 				}
 			}
 			//print();
-			if(found) break;
+		
 			
 			int wSize = wall.size();
+			
+			if(wall.isEmpty()) found = true;
+			
+			if(found ) break;
 			
 			for(int i=0;i<wSize;i++) {
 				Point w = wall.poll();

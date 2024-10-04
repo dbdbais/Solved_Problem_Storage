@@ -35,7 +35,7 @@ class Solution {
         for(int i=0;i<n-1;i++){
             int left = wires[i][0];
             int right = wires[i][1];
-            //System.out.println(left +" : " +right);
+      
             arr[left].add(right);
             arr[right].add(left);
             //넣고
@@ -47,8 +47,8 @@ class Solution {
             int left = wires[i][0];
             int right = wires[i][1];
             
-            arr[left].remove((Integer)right);
-            arr[right].remove((Integer)left);
+            arr[left].remove(Integer.valueOf(right));
+            arr[right].remove(Integer.valueOf(left));
             
             
             List<Integer> tlst = new ArrayList<>();

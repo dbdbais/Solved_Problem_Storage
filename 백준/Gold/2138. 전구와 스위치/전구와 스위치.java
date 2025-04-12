@@ -46,44 +46,48 @@ public class Main {
 		cur = in.readLine();
 		want = in.readLine();
 
-		arr = new int[N];
-
-		init();
-
-		// 스위치를 안누른 경우
-		int cnt = 0;
-		for (int i = 1; i < N; i++) {
-			if (arr[i - 1] != want.charAt(i - 1) - '0') {
-				// 내가 원하는 형상과 다를 경우 스위치 누른다.
-				// System.out.println(i+"스위치 클릭 - 안");
-				swtch(i);
-				cnt++;
-			}
+		if (cur.equals(want)) {
+			System.out.println(0);
 		}
-		if (check())
-			ans = Math.min(ans, cnt);
 
-		init();
+		else {
+			arr = new int[N];
 
-		swtch(0);
-		cnt = 1;
-		// 첫번쨰 누른 경우
+			init();
 
-		for (int i = 1; i < N; i++) {
-			if (arr[i - 1] != want.charAt(i - 1) - '0') {
-				// 내가 원하는 형상과 다를 경우 스위치 누른다.
-				// System.out.println(i+"스위치 클릭 - 누");
-				swtch(i);
-				cnt++;
+			// 스위치를 안누른 경우
+			int cnt = 0;
+			for (int i = 1; i < N; i++) {
+				if (arr[i - 1] != want.charAt(i - 1) - '0') {
+					// 내가 원하는 형상과 다를 경우 스위치 누른다.
+					//System.out.println(i+"스위치 클릭 - 안");
+					swtch(i);
+					cnt++;
+				}
 			}
+			if (check())ans = Math.min(ans, cnt);
+
+			init();
+
+			swtch(0);
+			cnt = 1;
+			// 첫번쨰 누른 경우
+
+			for (int i = 1; i < N; i++) {
+				if (arr[i - 1] != want.charAt(i - 1) - '0') {
+					// 내가 원하는 형상과 다를 경우 스위치 누른다.
+					//System.out.println(i+"스위치 클릭 - 누");
+					swtch(i);
+					cnt++;
+				}
+			}
+			if (check()) ans = Math.min(ans, cnt);
+			
+			if(ans == Integer.MAX_VALUE) ans =-1;
+			
+			System.out.println(ans);
 		}
-		if (check())
-			ans = Math.min(ans, cnt);
 
-		if (ans == Integer.MAX_VALUE)
-			ans = -1;
-
-		System.out.println(ans);
 	}
 
 }

@@ -11,42 +11,7 @@ public class Main {
 	static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	static int N;
 	static long ans;
-	static int[] A, B, C, D, CD;
-	
-	private static int lowerBound(int [] arr, int target) {
-		int begin = 0;
-		int end = arr.length;
-		
-		while(begin < end) {
-			int mid = (begin + end) / 2;
-			
-			if(arr[mid] >= target) {
-				end = mid;
-			}
-			else {
-				begin = mid+1;
-			}
-		}
-		return end;
-	}
-	
-	
-	private static int upperBound(int [] arr, int target) {
-		int begin = 0;
-		int end = arr.length;
-		
-		while(begin < end) {
-			int mid = (begin + end) / 2;
-			
-			if(arr[mid] > target) {
-				end = mid;
-			}
-			else {
-				begin = mid+1;
-			}
-		}
-		return end;
-	}
+	static int[] A, B, C, D, CD, AB;
 
 	public static void main(String[] args) throws Exception {
 
@@ -55,7 +20,9 @@ public class Main {
 		B = new int[N];
 		C = new int[N];
 		D = new int[N];
+		AB = new int [N * N];
 		CD = new int[N * N];
+		
 
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(in.readLine());
@@ -72,18 +39,49 @@ public class Main {
 			}
 		}
 		
-		Arrays.sort(CD);
-		
+		idx =0;
 		for(int i=0;i<N;i++) {
 			for(int j=0;j<N;j++) {
-				int sm = A[i] + B[j];
-				int upper = upperBound(CD, -sm);
-				int lower = lowerBound(CD, -sm);
-				
-				ans += (upper-lower);
-				
+				AB[idx++] = A[i] + B[j];
 			}
 		}
+		
+		Arrays.sort(CD);
+		Arrays.sort(AB);
+		
+		int left = 0;
+		int right = N*N-1;
+		// 투 포인터
+		
+		while(left < N*N && right >=0) {
+			long sm = AB[left] + CD[right];
+			if (sm < 0) {
+				left++;
+			}
+			else if(sm > 0) {
+				right--;
+			}
+			else {
+				long leftCount = 0, rightCount = 0;
+				int abVal = AB[left];
+				int cdVal = CD[right];
+				
+				while(left < N*N && AB[left] == abVal) {
+					leftCount++;
+					left++;
+				}
+				
+				while(right >= 0 && CD[right] == cdVal) {
+					rightCount++;
+					right--;
+				}
+				
+				ans += leftCount * rightCount;
+			}
+			
+		}
+		
+		
 		
 		System.out.println(ans);
 		

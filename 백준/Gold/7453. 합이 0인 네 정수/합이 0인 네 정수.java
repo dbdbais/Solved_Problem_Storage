@@ -38,11 +38,11 @@ public class Main {
 		while(begin < end) {
 			int mid = (begin + end) / 2;
 			
-			if(arr[mid] <= target) {
-				begin = mid+1;
+			if(arr[mid] > target) {
+				end = mid;
 			}
 			else {
-				end = mid;
+				begin = mid+1;
 			}
 		}
 		return end;

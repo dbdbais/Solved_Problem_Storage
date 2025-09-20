@@ -1,38 +1,35 @@
 import java.util.*;
 class Solution {
-    public ArrayList<Integer> lst;
-    
-    
-    
+    int tsz;
+    long mx;
     public long solution(int n, int[] times) {
-        //입국심사를 기다리는 사람 수 n 한명 times가 매개변수 모든 사람이 심사를 받는 시간
-        lst = new ArrayList<>();
+        long answer = 0;
+        tsz = times.length;
         
-        for(int elem : times){
-            lst.add(elem);
-        }
+        Arrays.sort(times);
+        mx = times[tsz-1];
         
-        long mxVal = Collections.max(lst);
         long left = 0;
-        long right = mxVal * n;
-        //최대값 구하고
-        long mid = -1;
+        long right = mx*n;
+        
         while(left < right){
-             mid = (left + right) / 2;
-            System.out.println(right);
+            long mid = (left+right)/2;
             long ret = 0;
-            for(int e : lst){
-                ret += (mid / e);
+            
+            for(int i=0;i<tsz;i++){
+                ret += mid / times[i];
             }
+            
             if(ret >= n){
-                  right = mid;
+                right = mid;
             }
             else{
-                left = mid + 1;
+                left = mid +1;
             }
         }
-        System.out.println(right);
-        long answer = right;
+        
+        answer = right;
+        
         
         return answer;
     }

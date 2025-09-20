@@ -1,57 +1,68 @@
-
 import java.util.*;
-import java.awt.*;
-
 class Solution {
-    public int[] sarr;
-    public boolean[] selected;
-    public int N,mx,K;
-    public ArrayList<Point> lst = new ArrayList<>();
     
-    public void permutation(int idx){
-        if(idx == N){
-            int val = K;
-            int cnt = 0;
-            for(int i=0;i<N;i++){
-                Point cur  = lst.get(sarr[i]);
-                
-                int least = cur.x;
-                int minus = cur.y;
-                
-                if(val >= least){
-                    val -= minus;
-                    cnt++;
+    class Dungeon{
+        
+        int least;
+        int spent;
+        
+        public Dungeon(int least,int spent){
+            this.least = least;
+            this.spent = spent;
+        }
+        
+    }
+    
+    int K,N,dsize,ans;
+    int [] sArr;
+    boolean [] selected;
+    ArrayList<Dungeon> lst;
+    
+    void permutation(int cnt){
+        
+        if(cnt == dsize){
+            
+            int tot = K;
+            int tcnt = 0;
+            for(int idx : sArr){
+                Dungeon cur = lst.get(idx);
+                if(tot >= cur.least){
+                    tcnt++;
+                    tot -= cur.spent;
                 }
             }
-            if(mx < cnt) mx = cnt;
-          
+            ans = Math.max(ans,tcnt);
+            
             return;
         }
-        for(int i=0;i<N;i++){
+        
+        for(int i=0;i<dsize;i++){
             if(selected[i]) continue;
-            sarr[idx] = i;
+            sArr[cnt] = i;
             selected[i] = true;
-            permutation(idx+1);
+            permutation(cnt+1);
             selected[i] = false;
+            
         }
         
     }
     
     public int solution(int k, int[][] dungeons) {
-        int answer = -1;
-        N = dungeons.length;
         K = k;
-        for(int i =0;i<N;i++){
-            lst.add(new Point(dungeons[i][0],dungeons[i][1]));
-        }
+        int answer = -1;
+        dsize = dungeons.length;
+        sArr = new int[dsize];
+        selected = new boolean[dsize];
         
-        sarr = new int[N];
-        selected = new boolean[N];
+        lst = new ArrayList<>();
+        
+        for(int i=0;i<dsize;i++){
+            lst.add(new Dungeon(dungeons[i][0],dungeons[i][1]));
+        }
         
         permutation(0);
         
-        answer = mx;
-        
+        answer = ans;
         return answer;
     }
 }

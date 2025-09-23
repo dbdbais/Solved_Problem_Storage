@@ -1,60 +1,62 @@
+import java.util.*;
 class Solution {
-    int ret = Integer.MAX_VALUE;
-    boolean[] visited;
-    int wCnt;
-    String tgt;
+    int res = Integer.MAX_VALUE;
+    int N;
+    boolean [] visited;
+    String [] gwords;
+    String gTarget;
     
-    boolean isDiff(String st1, String st2){
-        int n = st1.length();
+    boolean canGo(String s1, String s2){
         int cnt = 0;
-        for(int i=0;i<n;i++){
-            char a = st1.charAt(i);
-            char b = st2.charAt(i);
-            if(a != b){
-                cnt++;
-            }
+        for(int i=0;i<s1.length();i++){
+            char a = s1.charAt(i);
+            char b = s2.charAt(i);
+            
+            if(a != b) cnt++;
+            if(cnt >= 2) return false;
+            
         }
-        return cnt <=1;
+        return true;
     }
     
-    void DFS(String cur,int chance,String[] words){
-        if(chance >= ret) return;
-        
-        if(cur.equals(tgt)){
-            if(ret > chance){
-                ret = chance;
-            }
+    void DFS(String cur,int cnt){
+        System.out.println(cur+":"+cnt);
+        if (res < cnt) return;
+        // res가 이미 cnt보다 작거나, idx 끝까지 갔다면 반환
+        if(cur.equals(gTarget)){
+            res = Math.min(res,cnt);
             return;
         }
-        for(int i=0;i<wCnt;i++){
-            if(visited[i]) continue;
-            if(isDiff(cur,words[i])){
+        
+        for(int i=0;i<N;i++){
+            if (visited[i]) continue;
+            String nxt = gwords[i];
+            if(canGo(cur,nxt)){
                 visited[i] = true;
-                DFS(words[i],chance+1,words);
+                DFS(nxt,cnt+1);
                 visited[i] = false;
             }
         }
+        
         
     }
     
     public int solution(String begin, String target, String[] words) {
         int answer = 0;
-        wCnt = words.length;
-        tgt = target;
-        visited = new boolean[wCnt];
+        gwords = words;
+        gTarget = target;
+        N = words.length;
+        visited = new boolean[N];
         
-        boolean isIN = false;
+        DFS(begin,0);
         
-        for(String content : words){
-            if(content.equals(target)){
-                isIN = true;
-                break;
-            }
+        if (res == Integer.MAX_VALUE){
+            answer = 0;
         }
-        if(isIN){
-           DFS(begin,0,words);
-            answer = ret;
+        else{
+            answer = res;
         }
+        
         
         return answer;
     }

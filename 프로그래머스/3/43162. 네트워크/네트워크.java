@@ -1,39 +1,48 @@
 import java.util.*;
-import java.io.*;
-import java.awt.*;
-
-
 class Solution {
-    boolean [] visited = new boolean[201];
-    
-    public void DFS(int node, int col, int[][] computers){
-        if(visited[node]) return;
-        visited[node] = true;
-        for(int j=0;j<col;j++){
-            if(node == j || visited[j]) continue;
-            //같은 노드라면 SKIP
-            if(computers[node][j] == 1){
-            DFS(j,col,computers);
-            }
+    boolean [] visited;
+    ArrayList<Integer> adj [];
+    void DFS(int index){
+        visited[index] = true;
+        
+        for(int adj : adj[index]){
+            if(visited[adj]) continue;
+            DFS(adj);
         }
+        
         
     }
     
     public int solution(int n, int[][] computers) {
         int answer = 0;
+        visited = new boolean[n+1];
+        adj = new ArrayList[n+1];
         
-        int row = computers.length;
-        int col = computers[0].length;
-        
-        for(int i=0;i<row;i++){
-            if(!visited[i]){
-            answer++;
-            //System.out.println(i);
-            DFS(i,col,computers);
-            }
-            
+        for(int i=1;i<=n;i++){
+            adj[i] = new ArrayList<>();
         }
+        
+        for(int i=0;i<n;i++){
+            for(int j = 0;j<n;j++){
+                if(j == i) continue;
+                if(computers[i][j] == 1) adj[i+1].add(j+1);
+            }
+        }
+        
+        for(int i=1;i<=n;i++){
+            System.out.print(i+" : ");
+            for(int ad : adj[i]){
+                System.out.print(ad+" ");
+            }
+            System.out.println();
+        }
+        
+        for(int i=1;i<=n;i++){
+            if(visited[i]) continue;
+            answer++;
+            DFS(i);
+        }
+        
         return answer;
     }
-    
 }

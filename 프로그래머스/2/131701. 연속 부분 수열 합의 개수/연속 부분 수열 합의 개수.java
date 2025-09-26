@@ -8,20 +8,21 @@ class Solution {
         set= new HashSet<>();
         
         int [] pElement = new int [n * 2];
-        
+        int [] pSum = new int[n * 2];
         for(int i=0;i<pElement.length;i++){
             pElement[i] = elements[i%elements.length];
             set.add(pElement[i]);
-            //System.out.print(pElement[i]+" ");
         }
+        
+        pSum[0] = pElement[0];
+        for(int i=1;i<pSum.length;i++){
+            pSum[i] = pElement[i] + pSum[i-1];
+        }
+        
         for(int len=2;len<=n;len++){
             for(int start = 0;start < n;start++){
                 //start가 스타팅 포인드
-                int tsm = 0;
-                for(int k = 0;k<len;k++){
-                    //k만큼 이동
-                    tsm += pElement[start+k];
-                }
+                int tsm = pSum[start+len] - pSum[start];
                 set.add(tsm);
             }
         }

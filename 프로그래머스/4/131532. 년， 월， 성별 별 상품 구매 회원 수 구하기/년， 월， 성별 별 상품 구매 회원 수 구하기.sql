@@ -1,0 +1,1 @@
+SELECT YEAR(sales_date) as `YEAR`,MONTH(sales_date) as `MONTH`, GENDER, COUNT(DISTINCT(`UI`.USER_ID)) as `USERS` FROM USER_INFO `UI` JOIN ONLINE_SALE `OS` ON `UI`.USER_ID = `OS`.USER_ID WHERE `UI`.GENDER is not NULL GROUP BY YEAR(sales_date), MONTH(sales_date),GENDER ORDER BY YEAR(sales_date),MONTH(sales_date),GENDER ;
